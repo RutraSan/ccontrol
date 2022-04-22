@@ -35,9 +35,9 @@ namespace Hamsa
         {
             InitializeComponent();
             // set the _capture device
-            Camera = new VideoCapture();
-            Camera.ImageGrabbed += ProcessFrame;
-            Camera.FlipHorizontal = true;
+            //Camera = new VideoCapture();
+            //Camera.ImageGrabbed += ProcessFrame;
+            //Camera.FlipHorizontal = true;
 
             RunHandDetection();
             //Thread.Sleep(1000); // make sure the server pipe opens first
@@ -60,6 +60,10 @@ namespace Hamsa
                     PipeStream.Read(buffer, 0, 4);
                     val = BitConverter.ToSingle(buffer, 0);
                     Console.WriteLine(val);
+                    using (FileStream ImgFile = new FileStream(@"C:\temp\hamsaimg.jpeg", FileMode.Open, FileAccess.Read))
+                    {
+                        CameraBox.Image = new Bitmap(ImgFile);
+                    }
                 }
             }
             catch
