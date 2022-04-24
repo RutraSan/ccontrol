@@ -50,6 +50,8 @@ namespace Hamsa
             Console.WriteLine(bounds);
 
             preferences = new Preferences();
+
+            CameraBox.Visible = preferences.showCamera;
         }
 
         /// <summary>
@@ -173,6 +175,14 @@ namespace Hamsa
         private void chkShowCamera_CheckedChanged(object sender, EventArgs e)
         {
             preferences.showCamera = chkShowCamera.Checked;
+            if (preferences.showCamera)
+            {
+                CameraBox.Show();
+            }
+            else
+            {
+                CameraBox.Hide();
+            }
         }
     }
 }

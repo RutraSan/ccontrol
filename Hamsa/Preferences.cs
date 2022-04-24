@@ -18,9 +18,14 @@ namespace Hamsa
     {
 
         /// <summary>
-        /// The finger for controling the mouse cursor position
+        /// The finger for controling the mouse cursor position.
         /// </summary>
         public Fingers mouse { get; set; }
+
+        /// <summary>
+        /// The finger indicating left mouse button click.
+        /// </summary>
+        public Fingers leftClick { get; set; }
 
         /// <summary>
         /// Show camera output with the detected hand.
@@ -29,6 +34,7 @@ namespace Hamsa
         public Preferences()
         {
             mouse = Fingers.Index;
+            leftClick = Fingers.Pinky;
             showCamera = true;
         }
     }

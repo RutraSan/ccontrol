@@ -20,7 +20,6 @@ namespace Hamsa
         /// </summary>
         public bool detected { get; set; }
 
-
         /// <summary>
         /// keypoints should be a buffer with size multiple of 8, each 8 bytes are the X value 
         /// and Y value
@@ -52,20 +51,25 @@ namespace Hamsa
         }
         public bool IsFingerUp(Fingers finger)
         {
-
-            return false;
+            var fingerJoints = GetFinger(finger);
+            var dis = fingerJoints["tip"]["Y"] - fingerJoints["pip"]["Y"];
+            //Console.WriteLine("TIP: " + fingerJoints["tip"]["Y"]);
+            //Console.WriteLine("PIP: " + fingerJoints["pip"]["Y"]);
+            return fingerJoints["tip"]["Y"] < fingerJoints["pip"]["Y"];// || fingerJoints["tip"]["Y"] < fingerJoints["dip"]["Y"];
         }
-
+        /// <summary>
+        /// Returns the specified finger.
+        /// </summary>
         /// <param name="finger">Value of the Fingers enum.</param>
         /// <returns>Dictionary conatining the data about the tip of the finger</returns>
         public Dictionary<string, Dictionary<string, double>> GetFinger(Fingers finger)
         {
             int index = 1 + (int)finger * 4;
             var fingerJoints = new Dictionary<string, Dictionary<string, double>>();
-            fingerJoints["tip"] = handKeyPoints[index];
-            fingerJoints["dip"] = handKeyPoints[index + 1];
-            fingerJoints["pip"] = handKeyPoints[index + 2];
-            fingerJoints["mcp"] = handKeyPoints[index + 3];
+            fingerJoints["mcp"] = handKeyPoints[index];
+            fingerJoints["pip"] = handKeyPoints[index + 1];
+            fingerJoints["dip"] = handKeyPoints[index + 2];
+            fingerJoints["tip"] = handKeyPoints[index + 3];
             return fingerJoints;
         }
     }
