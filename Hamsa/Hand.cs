@@ -13,7 +13,7 @@ namespace Hamsa
         /// <summary>
         /// Dictionary containing more Dictionarys which represent the different points of the hand.
         /// </summary>
-        public Dictionary<int, Dictionary<string, float>> handKeyPoints;
+        public Dictionary<int, Dictionary<string, double>> handKeyPoints;
 
         
         /// <summary>
@@ -29,7 +29,7 @@ namespace Hamsa
         /// <param name="keypoints">buffer contatining the data</param>
         public Hand(byte[] keypoints)
         {
-            handKeyPoints = new Dictionary<int, Dictionary<string, float>>();
+            handKeyPoints = new Dictionary<int, Dictionary<string, double>>();
             int index = 0;
 
             // Data is messed up
@@ -45,7 +45,7 @@ namespace Hamsa
             // init handsKeyPoints
             for (int i= 0; index < keypoints.Length; i++)
             {
-                handKeyPoints[i] = new Dictionary<string, float>();
+                handKeyPoints[i] = new Dictionary<string, double>();
                 handKeyPoints[i]["X"] = 1 - BitConverter.ToSingle(keypoints, index);
                 handKeyPoints[i]["Y"] = BitConverter.ToSingle(keypoints, index + 4);
                 index += 8;
@@ -54,7 +54,7 @@ namespace Hamsa
 
         /// <param name="finger">Value of the Fingers enum.</param>
         /// <returns>Dictionary conatining the data about the tip of the finger</returns>
-        public Dictionary<string, float> GetFinger(Fingers finger)
+        public Dictionary<string, double> GetFinger(Fingers finger)
         {
             switch(finger)
             {
@@ -73,28 +73,28 @@ namespace Hamsa
             }
         }
 
-        public Dictionary<string, float> GetThumbFinger()
+        public Dictionary<string, double> GetThumbFinger()
         {
-            return new Dictionary<string, float>(handKeyPoints[4]);
+            return new Dictionary<string, double>(handKeyPoints[4]);
         }
 
-        public Dictionary<string, float> GetIndexFinger()
+        public Dictionary<string, double> GetIndexFinger()
         {
-            return new Dictionary<string, float>(handKeyPoints[8]);
+            return new Dictionary<string, double>(handKeyPoints[8]);
         }
 
-        public Dictionary<string, float> GetMiddleFinger()
+        public Dictionary<string, double> GetMiddleFinger()
         {
-            return new Dictionary<string, float>(handKeyPoints[12]);
+            return new Dictionary<string, double>(handKeyPoints[12]);
         }
 
-        public Dictionary<string, float> GetRingFinger()
+        public Dictionary<string, double> GetRingFinger()
         {
-            return new Dictionary<string, float>(handKeyPoints[16]);
+            return new Dictionary<string, double>(handKeyPoints[16]);
         }
-        public Dictionary<string, float> GetPinkyFinger()
+        public Dictionary<string, double> GetPinkyFinger()
         {
-            return new Dictionary<string, float>(handKeyPoints[20]);
+            return new Dictionary<string, double>(handKeyPoints[20]);
         }
     }
 }

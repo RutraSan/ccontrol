@@ -13,6 +13,13 @@ namespace Hamsa
     /// </summary>
     class MouseControl
     {
+        static Dictionary<string, double> previousPosition;
+        public static void InitControls()
+        {
+            previousPosition = new Dictionary<string, double>();
+            previousPosition["X"] = 0.0;
+            previousPosition["Y"] = 0.0;
+        }
         public static void HandleControl(in Hand hand, in Preferences preferences)
         {
             // get screen width
@@ -20,10 +27,17 @@ namespace Hamsa
             var bounds = screen.Bounds;
 
             // Update cursor position
-            if(hand.detected)
+            if (hand.detected)
             {
                 var finger = hand.GetFinger(preferences.mouse);
-                Cursor.Position = new Point((int)(bounds.Width * finger["X"]), (int)(bounds.Height * finger["Y"]));
+                var position = new Point((int)(bounds.Width * finger["X"]), (int)(bounds.Height * finger["Y"]));
+
+                // if the change is little, then for more stability the position doesn't update
+                if ((int)(finger["X"] * 1000) != (int)(previousPosition["X"] * 1000)  && (int)(finger["Y"] * 1000) != (int)(previousPosition["Y"] * 1000))
+                {
+                    Cursor.Position = position;
+                }
+                previousPosition = new Dictionary<string, double>(finger);
             }
         }
     }

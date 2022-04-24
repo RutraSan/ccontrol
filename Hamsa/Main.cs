@@ -38,6 +38,7 @@ namespace Hamsa
         {
             InitializeComponent();
             RunHandDetection();
+            MouseControl.InitControls();
 
             pipeClient = new NamedPipeClientStream(".", "HandDetection", PipeDirection.In);
             pipeClient.Connect();
