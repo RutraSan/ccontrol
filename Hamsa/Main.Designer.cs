@@ -31,7 +31,6 @@
             this.CameraBox = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.chkShowCamera = new System.Windows.Forms.CheckBox();
-            this.comDeviceList = new System.Windows.Forms.ComboBox();
             this.comFingersList = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.CameraBox)).BeginInit();
             this.SuspendLayout();
@@ -62,14 +61,7 @@
             this.chkShowCamera.TabIndex = 2;
             this.chkShowCamera.Text = "Show Camera";
             this.chkShowCamera.UseVisualStyleBackColor = true;
-            // 
-            // comDeviceList
-            // 
-            this.comDeviceList.FormattingEnabled = true;
-            this.comDeviceList.Location = new System.Drawing.Point(598, 233);
-            this.comDeviceList.Name = "comDeviceList";
-            this.comDeviceList.Size = new System.Drawing.Size(169, 21);
-            this.comDeviceList.TabIndex = 3;
+            this.chkShowCamera.CheckedChanged += new System.EventHandler(this.chkShowCamera_CheckedChanged);
             // 
             // comFingersList
             // 
@@ -82,7 +74,7 @@
             "Pinky"});
             this.comFingersList.Location = new System.Drawing.Point(599, 107);
             this.comFingersList.Name = "comFingersList";
-            this.comFingersList.Size = new System.Drawing.Size(121, 21);
+            this.comFingersList.Size = new System.Drawing.Size(174, 21);
             this.comFingersList.TabIndex = 4;
             this.comFingersList.SelectedIndexChanged += new System.EventHandler(this.comFingersList_SelectedIndexChanged);
             // 
@@ -92,7 +84,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.comFingersList);
-            this.Controls.Add(this.comDeviceList);
             this.Controls.Add(this.chkShowCamera);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.CameraBox);
@@ -110,7 +101,6 @@
         private System.Windows.Forms.PictureBox CameraBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkShowCamera;
-        private System.Windows.Forms.ComboBox comDeviceList;
         private System.Windows.Forms.ComboBox comFingersList;
     }
 }

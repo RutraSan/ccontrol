@@ -17,11 +17,19 @@ namespace Hamsa
     class Preferences
     {
 
+        /// <summary>
+        /// The finger for controling the mouse cursor position
+        /// </summary>
         public Fingers mouse { get; set; }
 
+        /// <summary>
+        /// Show camera output with the detected hand.
+        /// </summary>
+        public bool showCamera { get; set; }
         public Preferences()
         {
             mouse = Fingers.Index;
+            showCamera = true;
         }
     }
 }

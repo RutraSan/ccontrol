@@ -27,7 +27,6 @@ namespace Hamsa
     {
 
         NamedPipeClientStream pipeClient;
-        BinaryReader pipeStream;
         Process HandDetection;
 
         Preferences preferences;
@@ -38,26 +37,16 @@ namespace Hamsa
         public Main()
         {
             InitializeComponent();
-
             RunHandDetection();
-            //Thread.Sleep(1000); // make sure the server pipe opens first
+
             pipeClient = new NamedPipeClientStream(".", "HandDetection", PipeDirection.In);
             pipeClient.Connect();
-            pipeStream = new BinaryReader(pipeClient);
 
             Application.Idle += HandleApplication;
-            Cursor.Position = new System.Drawing.Point(0, 0);
 
-            // For each screen, add the screen to a list.
-            foreach (var screen in System.Windows.Forms.Screen.AllScreens)
-            {
-                comDeviceList.Items.Add(screen.DeviceName);
-
-            }
             screen = Screen.PrimaryScreen;
             bounds = screen.Bounds;
             Console.WriteLine(bounds);
-            chkShowCamera.Checked = true;
 
             preferences = new Preferences();
         }
@@ -71,20 +60,15 @@ namespace Hamsa
         {
             while (IsApplicationIdle())
             {
-                float x;
-                float y;
+                // get the hand data
                 byte[] buffer = new byte[200];
-
-                //pipeStream.Read(buffer, 0, 8);
                 pipeClient.Read(buffer, 0, buffer.Length);
-                x = 1-BitConverter.ToSingle(buffer, 0);
-                y = BitConverter.ToSingle(buffer, 4);
                 Hand hand = new Hand(buffer);
-                //Console.WriteLine("Y:"+ y);
-                //Console.WriteLine("X:"+ x);
-                //Console.WriteLine(Cursor.Position);
-                //Console.WriteLine(Screen.Bounds);
-                if (chkShowCamera.Checked)
+
+                // preform users desired actions
+                MouseControl.HandleControl(hand, preferences);
+                
+                if (preferences.showCamera)
                 {
                     try
                     {
@@ -94,11 +78,6 @@ namespace Hamsa
                         }
                     }
                     catch { }
-                }
-                if (hand.detected)
-                {
-                    Cursor.Position = new Point((int)(bounds.Width * hand.handKeyPoints[8]["X"]), (int)(bounds.Height * hand.handKeyPoints[8]["Y"]));
-                    //Console.WriteLine((float)System.Math.Round(hand.handKeyPoints[8]["X"], 2));
                 }
             }
         }
@@ -183,6 +162,16 @@ namespace Hamsa
                     break;
             }
 
+        }
+
+        /// <summary>
+        /// Show/Hide camera output.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chkShowCamera_CheckedChanged(object sender, EventArgs e)
+        {
+            preferences.showCamera = chkShowCamera.Checked;
         }
     }
 }
