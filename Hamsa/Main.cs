@@ -26,9 +26,11 @@ namespace Hamsa
     public partial class Main : Form
     {
 
-        NamedPipeClientStream PipeClient;
-        BinaryReader PipeStream;
+        NamedPipeClientStream pipeClient;
+        BinaryReader pipeStream;
         Process HandDetection;
+
+        Preferences preferences;
 
         Screen screen;
         Rectangle bounds;
@@ -39,17 +41,25 @@ namespace Hamsa
 
             RunHandDetection();
             //Thread.Sleep(1000); // make sure the server pipe opens first
-            PipeClient = new NamedPipeClientStream(".", "HandDetection", PipeDirection.In);
-            PipeClient.Connect();
-            PipeStream = new BinaryReader(PipeClient);
+            pipeClient = new NamedPipeClientStream(".", "HandDetection", PipeDirection.In);
+            pipeClient.Connect();
+            pipeStream = new BinaryReader(pipeClient);
 
             Application.Idle += HandleApplication;
             Cursor.Position = new System.Drawing.Point(0, 0);
 
+            // For each screen, add the screen to a list.
+            foreach (var screen in System.Windows.Forms.Screen.AllScreens)
+            {
+                comDeviceList.Items.Add(screen.DeviceName);
+
+            }
             screen = Screen.PrimaryScreen;
             bounds = screen.Bounds;
             Console.WriteLine(bounds);
             chkShowCamera.Checked = true;
+
+            preferences = new Preferences();
         }
 
         /// <summary>
@@ -65,8 +75,8 @@ namespace Hamsa
                 float y;
                 byte[] buffer = new byte[200];
 
-                //PipeStream.Read(buffer, 0, 8);
-                PipeClient.Read(buffer, 0, buffer.Length);
+                //pipeStream.Read(buffer, 0, 8);
+                pipeClient.Read(buffer, 0, buffer.Length);
                 x = 1-BitConverter.ToSingle(buffer, 0);
                 y = BitConverter.ToSingle(buffer, 4);
                 Hand hand = new Hand(buffer);
@@ -76,12 +86,16 @@ namespace Hamsa
                 //Console.WriteLine(Screen.Bounds);
                 if (chkShowCamera.Checked)
                 {
-                    using (FileStream ImgFile = new FileStream(@"C:\temp\hamsaimg.jpeg", FileMode.Open, FileAccess.Read))
+                    try
                     {
-                        CameraBox.Image = new Bitmap(ImgFile);
+                        using (FileStream ImgFile = new FileStream(@"C:\temp\hamsaimg.jpeg", FileMode.Open, FileAccess.Read))
+                        {
+                            CameraBox.Image = new Bitmap(ImgFile);
+                        }
                     }
+                    catch { }
                 }
-                if(hand.detected)
+                if (hand.detected)
                 {
                     Cursor.Position = new Point((int)(bounds.Width * hand.handKeyPoints[8]["X"]), (int)(bounds.Height * hand.handKeyPoints[8]["Y"]));
                     //Console.WriteLine((float)System.Math.Round(hand.handKeyPoints[8]["X"], 2));
@@ -135,11 +149,40 @@ namespace Hamsa
         /// <param name="e"></param>
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
-            PipeClient.Close();
+            pipeClient.Close();
             if (!HandDetection.HasExited) {
                 HandDetection.Kill();
             }
         }
 
+        /// <summary>
+        /// Change finger controling the mouse.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comFingersList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch(((ComboBox)sender).SelectedIndex)
+            {
+                case (int)Fingers.Thumb:
+                    preferences.mouse = Fingers.Thumb;
+                    break;
+                case (int)Fingers.Index:
+                    preferences.mouse = Fingers.Index;
+                    break;
+                case (int)Fingers.Middle:
+                    preferences.mouse = Fingers.Middle;
+                    break;
+                case (int)Fingers.Ring:
+                    preferences.mouse = Fingers.Ring;
+                    break;
+                case (int)Fingers.Pinky:
+                    preferences.mouse = Fingers.Pinky;
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 }
