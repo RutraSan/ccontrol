@@ -26,18 +26,16 @@ namespace Hamsa
     public partial class Main : Form
     {
 
-        private VideoCapture Camera = null;
         NamedPipeClientStream PipeClient;
         BinaryReader PipeStream;
         Process HandDetection;
 
+        Screen screen;
+        Rectangle bounds;
+
         public Main()
         {
             InitializeComponent();
-            // set the _capture device
-            //Camera = new VideoCapture();
-            //Camera.ImageGrabbed += ProcessFrame;
-            //Camera.FlipHorizontal = true;
 
             RunHandDetection();
             //Thread.Sleep(1000); // make sure the server pipe opens first
@@ -46,32 +44,55 @@ namespace Hamsa
             PipeStream = new BinaryReader(PipeClient);
 
             Application.Idle += HandleApplication;
+            Cursor.Position = new System.Drawing.Point(0, 0);
 
+            screen = Screen.PrimaryScreen;
+            bounds = screen.Bounds;
+            Console.WriteLine(bounds);
+            chkShowCamera.Checked = true;
         }
 
+        /// <summary>
+        /// This function is responsible for the main loop of the program.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HandleApplication(object sender, EventArgs e)
         {
-            try
+            while (IsApplicationIdle())
             {
-                while (IsApplicationIdle())
+                float x;
+                float y;
+                byte[] buffer = new byte[200];
+
+                //PipeStream.Read(buffer, 0, 8);
+                PipeClient.Read(buffer, 0, buffer.Length);
+                x = 1-BitConverter.ToSingle(buffer, 0);
+                y = BitConverter.ToSingle(buffer, 4);
+                Hand hand = new Hand(buffer);
+                //Console.WriteLine("Y:"+ y);
+                //Console.WriteLine("X:"+ x);
+                //Console.WriteLine(Cursor.Position);
+                //Console.WriteLine(Screen.Bounds);
+                if (chkShowCamera.Checked)
                 {
-                    float val;
-                    byte[] buffer = new byte[4];
-                    PipeStream.Read(buffer, 0, 4);
-                    val = BitConverter.ToSingle(buffer, 0);
-                    Console.WriteLine(val);
                     using (FileStream ImgFile = new FileStream(@"C:\temp\hamsaimg.jpeg", FileMode.Open, FileAccess.Read))
                     {
                         CameraBox.Image = new Bitmap(ImgFile);
                     }
                 }
-            }
-            catch
-            {
-
+                if(hand.detected)
+                {
+                    Cursor.Position = new Point((int)(bounds.Width * hand.handKeyPoints[8]["X"]), (int)(bounds.Height * hand.handKeyPoints[8]["Y"]));
+                    //Console.WriteLine((float)System.Math.Round(hand.handKeyPoints[8]["X"], 2));
+                }
             }
         }
 
+        /// <summary>
+        /// Checks if application is Idle.
+        /// </summary>
+        /// <returns>true if Idle</returns>
         bool IsApplicationIdle()
         {
             NativeMessage result;
@@ -108,26 +129,6 @@ namespace Hamsa
         }
 
         /// <summary>
-        /// Handle of the <c>ImageGrabbed</c> Event.
-        /// responsible for getting the image from <c>_capture</c>.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void ProcessFrame(object sender, EventArgs args)
-        {
-            //using (NamedPipeClientStream pipeClient = new NamedPipeClientStream(".", "CSServer", PipeDirection.In))
-            //{
-            //    pipeClient.Connect();
-            //}
-                // setting the frame
-                Mat image = new Mat();
-            if( Camera.Retrieve(image))
-            {
-                CameraBox.Image = (image.ToImage<Bgr, Byte>()).ToBitmap();
-            }
-        }
-
-        /// <summary>
         /// Event called when the app is closed. Frees resources and closes other processes
         /// </summary>
         /// <param name="sender"></param>
@@ -139,5 +140,6 @@ namespace Hamsa
                 HandDetection.Kill();
             }
         }
+
     }
 }
