@@ -9,6 +9,7 @@ mp_hands = mp.solutions.hands
 
 TMP_IMG = 'C:\\temp\\hamsaimg.jpeg'
 
+# pipe for communicating with the server
 pipe = win32pipe.CreateNamedPipe(
     r'\\.\pipe\HandDetection',
     win32pipe.PIPE_ACCESS_OUTBOUND,
@@ -18,8 +19,9 @@ pipe = win32pipe.CreateNamedPipe(
     None)
 
 
-# For webcam input:
+# webcam
 cap = cv2.VideoCapture(0)
+
 with mp_hands.Hands(
     model_complexity=0,
     min_detection_confidence=0.5,
@@ -27,7 +29,6 @@ with mp_hands.Hands(
   while cap.isOpened():
     success, image = cap.read()
     if not success:
-    #   print("Ignoring empty camera frame.")
       # If loading a video, use 'break' instead of 'continue'.
       continue
 
@@ -53,18 +54,14 @@ with mp_hands.Hands(
     image = cv2.flip(image, 1)
     cv2.imwrite(TMP_IMG, image)
 
-    # send the data
+    # save data as binary dump
     keypoints = []
+    buffer = struct.pack("f", -1)
     if results.multi_hand_landmarks is not None:
+        buffer = b''
         for data_point in results.multi_hand_landmarks[0].landmark:
-            keypoints.append({
-                            'X': data_point.x,
-                            'Y': data_point.y,
-                            'Z': data_point.z,
-                            'Visibility': data_point.visibility,
-                            })
-    
-        win32file.WriteFile(pipe, struct.pack("f", keypoints[8]["X"]))
-    else:
-        win32file.WriteFile(pipe, struct.pack("f", -1.0))        
+            buffer += struct.pack("f f", data_point.x, data_point.y)
+
+    # send the data
+    win32file.WriteFile(pipe, buffer)
 cap.release()
