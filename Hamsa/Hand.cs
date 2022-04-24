@@ -15,7 +15,6 @@ namespace Hamsa
         /// </summary>
         public Dictionary<int, Dictionary<string, double>> handKeyPoints;
 
-        
         /// <summary>
         /// Whether a hand were detected in the data given to the constructor.
         /// </summary>
@@ -51,50 +50,23 @@ namespace Hamsa
                 index += 8;
             }
         }
+        public bool IsFingerUp(Fingers finger)
+        {
+
+            return false;
+        }
 
         /// <param name="finger">Value of the Fingers enum.</param>
         /// <returns>Dictionary conatining the data about the tip of the finger</returns>
-        public Dictionary<string, double> GetFinger(Fingers finger)
+        public Dictionary<string, Dictionary<string, double>> GetFinger(Fingers finger)
         {
-            switch(finger)
-            {
-                case Fingers.Thumb:
-                    return GetThumbFinger();
-                case Fingers.Index:
-                    return GetIndexFinger();
-                case Fingers.Middle:
-                    return GetMiddleFinger();
-                case Fingers.Ring:
-                    return GetRingFinger();
-                case Fingers.Pinky:
-                    return GetPinkyFinger();
-                default:
-                    throw new Exception("CantReturnFinger");
-            }
-        }
-
-        public Dictionary<string, double> GetThumbFinger()
-        {
-            return new Dictionary<string, double>(handKeyPoints[4]);
-        }
-
-        public Dictionary<string, double> GetIndexFinger()
-        {
-            return new Dictionary<string, double>(handKeyPoints[8]);
-        }
-
-        public Dictionary<string, double> GetMiddleFinger()
-        {
-            return new Dictionary<string, double>(handKeyPoints[12]);
-        }
-
-        public Dictionary<string, double> GetRingFinger()
-        {
-            return new Dictionary<string, double>(handKeyPoints[16]);
-        }
-        public Dictionary<string, double> GetPinkyFinger()
-        {
-            return new Dictionary<string, double>(handKeyPoints[20]);
+            int index = 1 + (int)finger * 4;
+            var fingerJoints = new Dictionary<string, Dictionary<string, double>>();
+            fingerJoints["tip"] = handKeyPoints[index];
+            fingerJoints["dip"] = handKeyPoints[index + 1];
+            fingerJoints["pip"] = handKeyPoints[index + 2];
+            fingerJoints["mcp"] = handKeyPoints[index + 3];
+            return fingerJoints;
         }
     }
 }
