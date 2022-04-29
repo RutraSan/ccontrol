@@ -132,7 +132,7 @@
             this.Controls.Add(this.chkShowCamera);
             this.Controls.Add(this.lblTitle);
             this.Name = "Main";
-            this.Text = "Form1";
+            this.Text = "Hamsa";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.CameraBox)).EndInit();
             this.ResumeLayout(false);

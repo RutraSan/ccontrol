@@ -132,6 +132,7 @@ namespace Hamsa
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
             pipeClient.Close();
+            preferences.Save();
             if (!HandDetection.HasExited) {
                 HandDetection.Kill();
             }

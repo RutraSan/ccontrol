@@ -49,14 +49,18 @@ namespace Hamsa
                 index += 8;
             }
         }
+
+        /// <summary>
+        /// Returns whether the finger is up or not.
+        /// </summary>
+        /// <param name="finger"></param>
         public bool IsFingerUp(Fingers finger)
         {
             var fingerJoints = GetFinger(finger);
             var dis = fingerJoints["tip"]["Y"] - fingerJoints["pip"]["Y"];
-            //Console.WriteLine("TIP: " + fingerJoints["tip"]["Y"]);
-            //Console.WriteLine("PIP: " + fingerJoints["pip"]["Y"]);
-            return fingerJoints["tip"]["Y"] < fingerJoints["pip"]["Y"];// || fingerJoints["tip"]["Y"] < fingerJoints["dip"]["Y"];
+            return fingerJoints["tip"]["Y"] < fingerJoints["pip"]["Y"];
         }
+
         /// <summary>
         /// Returns the specified finger.
         /// </summary>

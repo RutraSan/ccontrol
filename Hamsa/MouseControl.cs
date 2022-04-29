@@ -12,7 +12,7 @@ namespace Hamsa
     /// <summary>
     /// Class that gives the functionality to control the mouse.
     /// </summary>
-    class MouseControl
+    static class MouseControl
     {
         /// <summary>
         /// Used to make a little stabilization. 
